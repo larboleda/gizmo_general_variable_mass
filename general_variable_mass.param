@@ -1,0 +1,98 @@
+%-------------------------------------------------------------------------
+%----  This file contains the input parameters needed at run-time for 
+%       simulations. It is based on and closely resembles the GADGET-3
+%       parameterfile (format of which and parsing routines written by 
+%       Volker Springel [volker.springel@h-its.org]). It has been updated
+%       with new naming conventions and additional variables as needed by 
+%       Phil Hopkins [phopkins@caltech.edu] for GIZMO.
+%-------------------------------------------------------------------------
+
+%----  Relevant files
+InitCondFile  /home/larboleda/ics_50x128
+OutputDir     /home/larboleda/GIZMO/outputs/general_variable_mass/
+
+
+%---- File formats 
+ICFormat    1  % 1=binary, 3=hdf5, 4=cluster 
+SnapFormat  1  % 1=binary, 3=hdf5 
+
+%---- Output parameters 
+RestartFile                 restart 
+SnapshotFileBase            gvm_Box50x128 
+OutputListOn                0  % =1 to use list in "OutputListFilename" 
+OutputListFilename          output_times.txt  % list of times for snaps 
+NumFilesPerSnapshot         1 
+NumFilesWrittenInParallel   1  % must be < N_processors & power of 2
+
+%---- Output frequency 
+TimeOfFirstSnapshot     0.0197
+TimeBetSnapshot         1.2172464
+TimeBetStatistics       0.05
+
+%---- CPU-time limits 
+TimeLimitCPU            10000000  % in seconds 
+CpuTimeBetRestartFile   7200  	% in seconds 
+ResubmitOn              0 
+ResubmitCommand         my-scriptfile 
+
+%----- Memory allocation
+MaxMemSize          3000    % sets maximum MPI process memory use in MByte 
+PartAllocFactor     2.0     % memory load allowed for better cpu balance 
+BufferSize          100     % in MByte 
+
+%---- Characteristics of run 
+TimeBegin   0.019607843    % Beginning of the simulation 
+TimeMax     1.0            % End of the simulation 
+
+%---- Cosmological parameters 
+ComovingIntegrationOn   1       % is it cosmological? (yes=1, no=0)
+BoxSize                 50000.0  % in code units
+Omega0                  0.25    % =0 for non-cosmological
+OmegaLambda             0.75    % =0 for non-cosmological
+OmegaBaryon             0.044   % =0 for non-cosmological
+HubbleParam             0.7     % little 'h'; =1 for non-cosmological runs
+
+%---- Accuracy of time integration 
+MaxSizeTimestep         0.1   % in code units, set for your problem
+MinSizeTimestep         1.0e-3 % set this very low, or risk stability
+
+%---- Tree algorithm, force accuracy, domain update frequency 
+TreeDomainUpdateFrequency   1.0	% 0.0005-0.05, dept on core+particle number  
+
+%---- System of units 
+UnitLength_in_cm            3.085678e21     % 1.0 kpc/h
+UnitMass_in_g               1.989e43  	    % 1.0e10 solar masses/h
+UnitVelocity_in_cm_per_s    1.0e5   	    % 1 km/sec
+GravityConstantInternal     0		        % calculated by code if =0
+
+%---- Initial temperature & temperature floor 
+InitGasTemp     300	    % set by IC file if =0 
+MinGasTemp      10.	    % don't set <10 in explicit feedback runs, otherwise 0
+
+%---- Density/volume estimation (kernel) 
+DesNumNgb               63      % 32 for standard kernel, 60-114 for quintic 
+MaxHsml                 1.0e10  % minimum gas kernel length (some very large value to prevent errors)
+MinGasHsmlFractional    1       % minimum kernel length relative to gas force softening (<= 1)
+
+%---- Gravitational softening lengths 
+%----- Softening lengths per particle type. If ADAPTIVE_GRAVSOFT is set, these  
+%-------- are the minimum softening allowed for each type ------- 
+%-------- (units are co-moving for cosmological integrations)
+SofteningGas   4.001    % gas (type=0) (in units above, =1 pc softening)
+SofteningHalo   4.001    % dark matter/collisionless particles (type=1)
+SofteningDisk   4.001    % collisionless particles (type=2)
+SofteningBulge  4.001    % collisionless particles (type=3)
+SofteningStars  4.001    % stars spawned from gas (type=4)
+SofteningBndry  4.001    % black holes (if active), or collisionless (type=5)
+%---- if these are set in cosmo runs, SofteningX switches from comoving to physical
+%------- units when the comoving value exceeds the choice here
+%------- (these are ignored, and *only* the above are used, for non-cosmo runs)
+SofteningGasMaxPhys     4.0001    % switch to 0.5pc physical below z=1 
+SofteningHaloMaxPhys    4.0001 
+SofteningDiskMaxPhys    4.0001 
+SofteningBulgeMaxPhys   4.0001 
+SofteningStarsMaxPhys   4.0001 
+SofteningBndryMaxPhys   4.0001 
+%----- parameters for adaptive gravitational softening 
+AGS_DesNumNgb           64  % neighbor number for calculating adaptive gravsoft
+AGS_MaxNumNgbDeviation   2
